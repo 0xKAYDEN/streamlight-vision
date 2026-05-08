@@ -1,48 +1,35 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Play, Plus, Star, Share2 } from "lucide-react";
 import { PosterArt } from "@/components/poster-art";
 import { TitleRow } from "@/components/title-row";
-import { catalog, getTitle } from "@/lib/catalog";
+import { useCatalog, useTitle } from "@/lib/catalog-store";
 
 export const Route = createFileRoute("/titles/$id")({
-  loader: ({ params }) => {
-    const title = getTitle(params.id);
-    if (!title) throw notFound();
-    return { title };
-  },
-  head: ({ loaderData }) => ({
-    meta: loaderData
-      ? [
-          { title: `${loaderData.title.title} — ThunderStream` },
-          { name: "description", content: loaderData.title.synopsis },
-          { property: "og:title", content: loaderData.title.title },
-          { property: "og:description", content: loaderData.title.tagline },
-        ]
-      : [],
-  }),
   component: TitlePage,
-  notFoundComponent: () => (
-    <div className="px-8 py-20 text-center">
-      <h1 className="text-3xl font-semibold">Title not found</h1>
-      <Link to="/browse" className="mt-4 inline-block text-brand hover:underline">
-        Browse the catalog
-      </Link>
-    </div>
-  ),
-  errorComponent: ({ error }) => (
-    <div className="px-8 py-20 text-center text-muted-foreground">{error.message}</div>
-  ),
 });
 
 function TitlePage() {
-  const { title } = Route.useLoaderData();
-  const similar = catalog.filter(
-    (t) => t.id !== title.id && t.genres.some((g) => title.genres.includes(g))
-  ).slice(0, 8);
+  const { id } = Route.useParams();
+  const title = useTitle(id);
+  const catalog = useCatalog();
+
+  if (!title) {
+    return (
+      <div className="px-8 py-20 text-center">
+        <h1 className="text-3xl font-semibold">Title not found</h1>
+        <Link to="/browse" className="mt-4 inline-block text-brand hover:underline">
+          Browse the catalog
+        </Link>
+      </div>
+    );
+  }
+
+  const similar = catalog
+    .filter((t) => t.id !== title.id && t.genres.some((g) => title.genres.includes(g)))
+    .slice(0, 8);
 
   return (
     <div>
-      {/* Hero backdrop */}
       <section className="relative h-[70vh] min-h-[460px] w-full overflow-hidden">
         <PosterArt title={title} variant="backdrop" className="absolute inset-0" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-transparent" />
@@ -71,9 +58,7 @@ function TitlePage() {
               </div>
             </div>
 
-            <p className="mt-6 max-w-2xl text-base text-muted-foreground">
-              {title.synopsis}
-            </p>
+            <p className="mt-6 max-w-2xl text-base text-muted-foreground">{title.synopsis}</p>
 
             <div className="mt-7 flex items-center gap-3">
               <Link
@@ -94,13 +79,12 @@ function TitlePage() {
         </div>
       </section>
 
-      {/* Servers + cast */}
       <section className="px-4 md:px-8 grid md:grid-cols-3 gap-8">
         <div className="md:col-span-2 space-y-6">
           <div>
             <h2 className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Streaming servers</h2>
             <div className="mt-3 grid sm:grid-cols-2 gap-3">
-              {title.servers.map((s: { label: string; type: string; quality?: string }, i: number) => (
+              {title.servers.map((s, i) => (
                 <Link
                   key={i}
                   to="/watch/$id"
@@ -111,11 +95,30 @@ function TitlePage() {
                     <div className="font-medium">{s.label}</div>
                     <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{s.type}</span>
                   </div>
-                  <div className="mt-1 text-xs text-muted-foreground">Quality: {s.quality}</div>
+                  <div className="mt-1 text-xs text-muted-foreground">Quality: {s.quality ?? "Auto"}</div>
                 </Link>
               ))}
             </div>
           </div>
+
+          {title.episodes && title.episodes.length > 0 && (
+            <div>
+              <h2 className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Episodes</h2>
+              <div className="mt-3 space-y-2">
+                {title.episodes.map((ep) => (
+                  <div key={ep.id} className="rounded-lg border border-white/10 bg-white/5 p-4 flex items-start justify-between gap-4">
+                    <div>
+                      <div className="text-xs uppercase tracking-wider text-muted-foreground">
+                        S{ep.season} · E{ep.number}{ep.runtime ? ` · ${ep.runtime}` : ""}
+                      </div>
+                      <div className="font-medium mt-0.5">{ep.title}</div>
+                      {ep.synopsis && <div className="text-sm text-muted-foreground mt-1">{ep.synopsis}</div>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
         <aside className="space-y-4">
           <div>
