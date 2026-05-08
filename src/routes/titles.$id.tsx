@@ -3,6 +3,7 @@ import { Play, Plus, Star, Share2 } from "lucide-react";
 import { PosterArt } from "@/components/poster-art";
 import { TitleRow } from "@/components/title-row";
 import { useCatalog, useTitle } from "@/lib/catalog-store";
+import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/titles/$id")({
   component: TitlePage,
@@ -12,13 +13,14 @@ function TitlePage() {
   const { id } = Route.useParams();
   const title = useTitle(id);
   const catalog = useCatalog();
+  const { t } = useI18n();
 
   if (!title) {
     return (
       <div className="px-8 py-20 text-center">
-        <h1 className="text-3xl font-semibold">Title not found</h1>
+        <h1 className="text-3xl font-semibold">{t("title.notFound")}</h1>
         <Link to="/browse" className="mt-4 inline-block text-brand hover:underline">
-          Browse the catalog
+          {t("title.browseLink")}
         </Link>
       </div>
     );
