@@ -104,6 +104,21 @@
     color-scheme: dark;
   }
 
+  /* Native select dropdown styling — keeps the menu readable on dark theme */
+  select {
+    color: var(--color-foreground);
+    background-color: oklch(0.16 0.025 270);
+  }
+  select option,
+  select optgroup {
+    background-color: oklch(0.16 0.025 270);
+    color: var(--color-foreground);
+  }
+  select option:checked {
+    background: var(--brand);
+    color: var(--brand-foreground);
+  }
+
   /* Subtle starfield-like noise overlay for depth */
   body::before {
     content: "";

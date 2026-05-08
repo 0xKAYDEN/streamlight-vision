@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Play, Info, Star } from "lucide-react";
 import { PosterArt } from "./poster-art";
+import { useI18n } from "@/lib/i18n";
 import type { Title } from "@/lib/catalog";
 
 export function Hero({ titles }: { titles: Title[] }) {
+  const { t } = useI18n();
   const [idx, setIdx] = useState(0);
   useEffect(() => {
     if (titles.length < 2) return;
@@ -33,7 +35,7 @@ export function Hero({ titles }: { titles: Title[] }) {
         <div className="px-4 md:px-8 pb-16 max-w-3xl">
           <div className="inline-flex items-center gap-2 rounded-full glass px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-muted-foreground mb-5">
             <span className="size-1.5 rounded-full bg-brand animate-pulse" />
-            Featured · {active.kind}
+            {t("hero.featured")} · {active.kind}
           </div>
           <h1
             className="text-5xl md:text-7xl font-semibold leading-[1.02] tracking-tight"
@@ -62,14 +64,14 @@ export function Hero({ titles }: { titles: Title[] }) {
               params={{ id: active.id }}
               className="inline-flex items-center gap-2 rounded-md bg-gradient-brand px-5 py-2.5 text-sm font-medium text-white shadow-glow hover:opacity-95 transition"
             >
-              <Play className="size-4 fill-current" /> Play now
+              <Play className="size-4 fill-current" /> {t("hero.play")}
             </Link>
             <Link
               to="/titles/$id"
               params={{ id: active.id }}
               className="inline-flex items-center gap-2 rounded-md glass px-5 py-2.5 text-sm font-medium hover:bg-white/10 transition"
             >
-              <Info className="size-4" /> More info
+              <Info className="size-4" /> {t("hero.info")}
             </Link>
           </div>
 

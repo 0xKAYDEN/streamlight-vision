@@ -12,6 +12,7 @@ import {
 import appCss from "../styles.css?url";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
+import { I18nProvider } from "@/lib/i18n";
 
 function NotFoundComponent() {
   return (
@@ -140,9 +141,11 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
-      <Chrome>
-        <Outlet />
-      </Chrome>
+      <I18nProvider>
+        <Chrome>
+          <Outlet />
+        </Chrome>
+      </I18nProvider>
     </QueryClientProvider>
   );
 }
