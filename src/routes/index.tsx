@@ -1,26 +1,25 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Hero } from "@/components/hero";
+import { TitleRow } from "@/components/title-row";
+import { catalog, featured, trending, byKind, byGenre } from "@/lib/catalog";
 
 export const Route = createFileRoute("/")({
-  component: Index,
+  component: Home,
 });
 
-// IMPORTANT: Replace this placeholder. For sites with multiple pages (About, Services, Contact, etc.),
-// create separate route files (about.tsx, services.tsx, contact.tsx) — don't put all pages in this file.
-function PlaceholderIndex() {
+function Home() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div className="relative">
+      <Hero titles={featured.length ? featured : catalog.slice(0, 3)} />
+      <div className="relative -mt-16 z-10 space-y-10 pb-10">
+        <TitleRow heading="Trending now" titles={trending} />
+        <TitleRow heading="Top picks for you" titles={[...catalog].sort((a, b) => b.rating - a.rating).slice(0, 8)} />
+        <TitleRow heading="Series" titles={byKind("series")} />
+        <TitleRow heading="Movies" titles={byKind("movie")} />
+        <TitleRow heading="Anime" titles={byKind("anime")} />
+        <TitleRow heading="Documentaries" titles={byKind("documentary")} />
+        <TitleRow heading="Sci-Fi worlds" titles={byGenre("Sci-Fi")} />
+      </div>
     </div>
   );
-}
-
-function Index() {
-  return <PlaceholderIndex />;
 }
