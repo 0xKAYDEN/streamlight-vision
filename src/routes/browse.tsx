@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { z } from "zod";
 import { TitleCard } from "@/components/title-card";
 import { useCatalog } from "@/lib/catalog-store";
+import { useI18n } from "@/lib/i18n";
 
 const searchSchema = z.object({
   q: z.string().optional(),
