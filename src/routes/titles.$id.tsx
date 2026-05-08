@@ -68,10 +68,10 @@ function TitlePage() {
                 params={{ id: title.id }}
                 className="inline-flex items-center gap-2 rounded-md bg-gradient-brand px-6 py-3 text-sm font-medium text-white shadow-glow hover:opacity-95 transition"
               >
-                <Play className="size-4 fill-current" /> Play
+                <Play className="size-4 fill-current" /> {t("title.play")}
               </Link>
               <button className="inline-flex items-center gap-2 rounded-md glass px-5 py-3 text-sm hover:bg-white/10 transition">
-                <Plus className="size-4" /> My list
+                <Plus className="size-4" /> {t("title.myList")}
               </button>
               <button className="size-11 grid place-items-center rounded-md glass hover:bg-white/10 transition">
                 <Share2 className="size-4" />
@@ -84,7 +84,7 @@ function TitlePage() {
       <section className="px-4 md:px-8 grid md:grid-cols-3 gap-8">
         <div className="md:col-span-2 space-y-6">
           <div>
-            <h2 className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Streaming servers</h2>
+            <h2 className="text-sm uppercase tracking-[0.2em] text-muted-foreground">{t("title.servers")}</h2>
             <div className="mt-3 grid sm:grid-cols-2 gap-3">
               {title.servers.map((s, i) => (
                 <Link
@@ -97,7 +97,7 @@ function TitlePage() {
                     <div className="font-medium">{s.label}</div>
                     <span className="text-[10px] uppercase tracking-wider text-muted-foreground">{s.type}</span>
                   </div>
-                  <div className="mt-1 text-xs text-muted-foreground">Quality: {s.quality ?? "Auto"}</div>
+                  <div className="mt-1 text-xs text-muted-foreground">{t("title.quality")}: {s.quality ?? "Auto"}</div>
                 </Link>
               ))}
             </div>
@@ -105,7 +105,7 @@ function TitlePage() {
 
           {title.episodes && title.episodes.length > 0 && (
             <div>
-              <h2 className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Episodes</h2>
+              <h2 className="text-sm uppercase tracking-[0.2em] text-muted-foreground">{t("title.episodes")}</h2>
               <div className="mt-3 space-y-2">
                 {title.episodes.map((ep) => (
                   <div key={ep.id} className="rounded-lg border border-white/10 bg-white/5 p-4 flex items-start justify-between gap-4">
@@ -124,16 +124,16 @@ function TitlePage() {
         </div>
         <aside className="space-y-4">
           <div>
-            <h3 className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Cast</h3>
+            <h3 className="text-sm uppercase tracking-[0.2em] text-muted-foreground">{t("title.cast")}</h3>
             <div className="mt-2 text-sm">{title.cast.join(", ")}</div>
           </div>
           <div>
-            <h3 className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Details</h3>
+            <h3 className="text-sm uppercase tracking-[0.2em] text-muted-foreground">{t("title.details")}</h3>
             <dl className="mt-2 text-sm space-y-1">
-              <div className="flex justify-between"><dt className="text-muted-foreground">Year</dt><dd>{title.year}</dd></div>
-              <div className="flex justify-between"><dt className="text-muted-foreground">Runtime</dt><dd>{title.runtime}</dd></div>
-              <div className="flex justify-between"><dt className="text-muted-foreground">Type</dt><dd className="capitalize">{title.kind}</dd></div>
-              <div className="flex justify-between"><dt className="text-muted-foreground">Rating</dt><dd>{title.rating.toFixed(1)} / 10</dd></div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">{t("title.year")}</dt><dd>{title.year}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">{t("title.runtime")}</dt><dd>{title.runtime}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">{t("title.type")}</dt><dd className="capitalize">{title.kind}</dd></div>
+              <div className="flex justify-between"><dt className="text-muted-foreground">{t("title.rating")}</dt><dd>{title.rating.toFixed(1)} / 10</dd></div>
             </dl>
           </div>
         </aside>
@@ -141,7 +141,7 @@ function TitlePage() {
 
       {similar.length > 0 && (
         <div className="mt-14">
-          <TitleRow heading="More like this" titles={similar} />
+          <TitleRow heading={t("title.similar")} titles={similar} />
         </div>
       )}
     </div>
