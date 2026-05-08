@@ -38,7 +38,7 @@ function Browse() {
   }, [q, genre, kind, year]);
 
   const update = (patch: Record<string, unknown>) =>
-    navigate({ search: (old) => ({ ...old, ...patch }) as never });
+    navigate({ search: (old: Record<string, unknown>) => ({ ...old, ...patch }) as never });
 
   const years = Array.from(new Set(catalog.map((t) => t.year))).sort((a, b) => b - a);
 
