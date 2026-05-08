@@ -100,7 +100,7 @@ function TitlePage() {
           <div>
             <h2 className="text-sm uppercase tracking-[0.2em] text-muted-foreground">Streaming servers</h2>
             <div className="mt-3 grid sm:grid-cols-2 gap-3">
-              {title.servers.map((s, i) => (
+              {title.servers.map((s: { label: string; type: string; quality?: string }, i: number) => (
                 <Link
                   key={i}
                   to="/watch/$id"
