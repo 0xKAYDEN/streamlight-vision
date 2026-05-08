@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
 import { z } from "zod";
 import { TitleCard } from "@/components/title-card";
-import { catalog, allGenres } from "@/lib/catalog";
+import { useCatalog } from "@/lib/catalog-store";
 
 const searchSchema = z.object({
   q: z.string().optional(),
@@ -25,6 +25,7 @@ export const Route = createFileRoute("/browse")({
 function Browse() {
   const { q, genre, kind, year } = Route.useSearch();
   const navigate = Route.useNavigate();
+  const catalog = useCatalog();
 
   const results = useMemo(() => {
     const s = (q ?? "").trim().toLowerCase();
@@ -35,12 +36,13 @@ function Browse() {
       if (year && t.year !== year) return false;
       return true;
     });
-  }, [q, genre, kind, year]);
+  }, [catalog, q, genre, kind, year]);
 
   const update = (patch: Record<string, unknown>) =>
     navigate({ search: (old: Record<string, unknown>) => ({ ...old, ...patch }) as never });
 
   const years = Array.from(new Set(catalog.map((t) => t.year))).sort((a, b) => b - a);
+  const allGenres = Array.from(new Set(catalog.flatMap((t) => t.genres))).sort();
 
   return (
     <div className="px-4 md:px-8 py-10">

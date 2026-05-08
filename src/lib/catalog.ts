@@ -11,6 +11,17 @@ export type Subtitle = {
   src: string;
 };
 
+export type Episode = {
+  id: string;
+  season: number;
+  number: number;
+  title: string;
+  runtime?: string;
+  synopsis?: string;
+  servers?: StreamServer[];
+  subtitles?: Subtitle[];
+};
+
 export type Title = {
   id: string;
   title: string;
@@ -29,7 +40,12 @@ export type Title = {
   featured?: boolean;
   servers: StreamServer[];
   subtitles?: Subtitle[];
+  episodes?: Episode[];
 };
+
+export const SAMPLE_HLS = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8";
+export const SAMPLE_MP4 =
+  "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
 
 // Public sample streams — safe to use for demos.
 const HLS_BIG = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8";

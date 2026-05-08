@@ -10,19 +10,32 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as BrowseRouteImport } from './routes/browse'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as WatchIdRouteImport } from './routes/watch.$id'
 import { Route as TitlesIdRouteImport } from './routes/titles.$id'
+import { Route as AdminTitlesIdRouteImport } from './routes/admin.titles.$id'
 
 const BrowseRoute = BrowseRouteImport.update({
   id: '/browse',
   path: '/browse',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
 } as any)
 const WatchIdRoute = WatchIdRouteImport.update({
   id: '/watch/$id',
@@ -34,36 +47,71 @@ const TitlesIdRoute = TitlesIdRouteImport.update({
   path: '/titles/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminTitlesIdRoute = AdminTitlesIdRouteImport.update({
+  id: '/titles/$id',
+  path: '/titles/$id',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/browse': typeof BrowseRoute
   '/titles/$id': typeof TitlesIdRoute
   '/watch/$id': typeof WatchIdRoute
+  '/admin/': typeof AdminIndexRoute
+  '/admin/titles/$id': typeof AdminTitlesIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/browse': typeof BrowseRoute
   '/titles/$id': typeof TitlesIdRoute
   '/watch/$id': typeof WatchIdRoute
+  '/admin': typeof AdminIndexRoute
+  '/admin/titles/$id': typeof AdminTitlesIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/browse': typeof BrowseRoute
   '/titles/$id': typeof TitlesIdRoute
   '/watch/$id': typeof WatchIdRoute
+  '/admin/': typeof AdminIndexRoute
+  '/admin/titles/$id': typeof AdminTitlesIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/browse' | '/titles/$id' | '/watch/$id'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/browse'
+    | '/titles/$id'
+    | '/watch/$id'
+    | '/admin/'
+    | '/admin/titles/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/browse' | '/titles/$id' | '/watch/$id'
-  id: '__root__' | '/' | '/browse' | '/titles/$id' | '/watch/$id'
+  to:
+    | '/'
+    | '/browse'
+    | '/titles/$id'
+    | '/watch/$id'
+    | '/admin'
+    | '/admin/titles/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/browse'
+    | '/titles/$id'
+    | '/watch/$id'
+    | '/admin/'
+    | '/admin/titles/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
   BrowseRoute: typeof BrowseRoute
   TitlesIdRoute: typeof TitlesIdRoute
   WatchIdRoute: typeof WatchIdRoute
@@ -78,12 +126,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BrowseRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/watch/$id': {
       id: '/watch/$id'
@@ -99,11 +161,31 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TitlesIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/titles/$id': {
+      id: '/admin/titles/$id'
+      path: '/titles/$id'
+      fullPath: '/admin/titles/$id'
+      preLoaderRoute: typeof AdminTitlesIdRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
+interface AdminRouteChildren {
+  AdminIndexRoute: typeof AdminIndexRoute
+  AdminTitlesIdRoute: typeof AdminTitlesIdRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminIndexRoute: AdminIndexRoute,
+  AdminTitlesIdRoute: AdminTitlesIdRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
   BrowseRoute: BrowseRoute,
   TitlesIdRoute: TitlesIdRoute,
   WatchIdRoute: WatchIdRoute,

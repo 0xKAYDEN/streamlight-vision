@@ -1,13 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useMemo } from "react";
 import { Hero } from "@/components/hero";
 import { TitleRow } from "@/components/title-row";
-import { catalog, featured, trending, byKind, byGenre } from "@/lib/catalog";
+import { useCatalog } from "@/lib/catalog-store";
 
 export const Route = createFileRoute("/")({
   component: Home,
 });
 
 function Home() {
+  const catalog = useCatalog();
+  const featured = useMemo(() => catalog.filter((t) => t.featured), [catalog]);
+  const trending = useMemo(() => catalog.filter((t) => t.trending), [catalog]);
+  const byKind = (k: string) => catalog.filter((t) => t.kind === k);
+  const byGenre = (g: string) => catalog.filter((t) => t.genres.includes(g));
+
   return (
     <div className="relative">
       <Hero titles={featured.length ? featured : catalog.slice(0, 3)} />
