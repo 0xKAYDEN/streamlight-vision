@@ -59,6 +59,13 @@ export function SiteHeader() {
           >
             Anime
           </Link>
+          <Link
+            to="/admin"
+            activeProps={{ className: "text-foreground" }}
+            className="hover:text-foreground transition"
+          >
+            Admin
+          </Link>
         </nav>
         <form onSubmit={submit} className="ml-auto relative w-full max-w-xs">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
