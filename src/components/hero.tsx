@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { Play, Info, Star } from "lucide-react";
 import { PosterArt } from "./poster-art";
+import { useI18n } from "@/lib/i18n";
 import type { Title } from "@/lib/catalog";
 
 export function Hero({ titles }: { titles: Title[] }) {
+  const { t } = useI18n();
   const [idx, setIdx] = useState(0);
   useEffect(() => {
     if (titles.length < 2) return;
