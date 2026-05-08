@@ -63,7 +63,7 @@ function TitlePage() {
                 <Star className="size-3.5 fill-brand text-brand" /> {title.rating.toFixed(1)}
               </span>
               <div className="flex flex-wrap gap-2">
-                {title.genres.map((g) => (
+                {title.genres.map((g: string) => (
                   <span key={g} className="rounded-full glass px-2.5 py-0.5 text-[11px]">
                     {g}
                   </span>
