@@ -69,14 +69,34 @@ export function findTitle(id: string): Title | undefined {
 
 export function upsertTitle(t: Title) {
   load();
+  const now = Date.now();
   const idx = cache.findIndex((x) => x.id === t.id);
   if (idx >= 0) {
-    cache = cache.map((x, i) => (i === idx ? t : x));
+    const prev = cache[idx];
+    const next: Title = { ...t, createdAt: prev.createdAt ?? now, updatedAt: now };
+    cache = cache.map((x, i) => (i === idx ? next : x));
   } else {
-    cache = [t, ...cache];
+    cache = [{ ...t, createdAt: now, updatedAt: now }, ...cache];
   }
   persist();
   emit();
+}
+
+export function importCatalog(json: string): { ok: boolean; count?: number; error?: string } {
+  try {
+    const parsed = JSON.parse(json);
+    if (!Array.isArray(parsed)) return { ok: false, error: "Expected an array of titles" };
+    cache = parsed as Title[];
+    persist();
+    emit();
+    return { ok: true, count: cache.length };
+  } catch (e) {
+    return { ok: false, error: (e as Error).message };
+  }
+}
+
+export function exportCatalog(): string {
+  return JSON.stringify(getCatalog(), null, 2);
 }
 
 export function deleteTitle(id: string) {
