@@ -41,6 +41,8 @@ export type Title = {
   servers: StreamServer[];
   subtitles?: Subtitle[];
   episodes?: Episode[];
+  createdAt?: number;
+  updatedAt?: number;
 };
 
 export const SAMPLE_HLS = "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8";
