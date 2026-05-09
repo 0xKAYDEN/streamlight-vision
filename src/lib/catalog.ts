@@ -285,6 +285,42 @@ export const catalog: Title[] = [
   },
 ];
 
+// Curated public sample trailers (YouTube IDs) used as round-robin defaults.
+const TRAILER_IDS = [
+  "aqz-KE-bpKQ", // Big Buck Bunny
+  "TcMBFSGVi1c", // Avengers: Endgame
+  "8g18jFHCLXk", // Dune
+  "5PSNL1qE6VY", // Blade Runner 2049
+  "JfVOs4VSpmA", // Spider-Man: Across the Spider-Verse
+  "5xH0HfJHsaY", // Arcane
+  "JZ-d-cstYrU", // The Witcher
+  "0KSOMA3QBU0", // The Dark Knight
+];
+
+const posterFor = (id: string) =>
+  `https://picsum.photos/seed/${id}-poster/600/900`;
+const backdropFor = (id: string) =>
+  `https://picsum.photos/seed/${id}-backdrop/1600/900`;
+const avatarFor = (name: string) =>
+  `https://i.pravatar.cc/200?u=${encodeURIComponent(name)}`;
+
+const ROLES = ["Lead", "Supporting", "Antagonist", "Director", "Narrator", "Cameo"];
+
+// Decorate every seed title with poster/backdrop/trailer/cast photos.
+catalog.forEach((t, i) => {
+  if (!t.posterUrl) t.posterUrl = posterFor(t.id);
+  if (!t.backdropUrl) t.backdropUrl = backdropFor(t.id);
+  if (!t.trailerUrl)
+    t.trailerUrl = `https://www.youtube.com/watch?v=${TRAILER_IDS[i % TRAILER_IDS.length]}`;
+  if (!t.castProfiles) {
+    t.castProfiles = t.cast.map((name, idx) => ({
+      name,
+      role: idx === 0 ? ROLES[0] : ROLES[(idx + 1) % ROLES.length],
+      photo: avatarFor(name),
+    }));
+  }
+});
+
 export const getTitle = (id: string) => catalog.find((t) => t.id === id);
 
 export const featured = catalog.filter((t) => t.featured);
