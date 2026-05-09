@@ -304,6 +304,8 @@ const backdropFor = (id: string) =>
 const avatarFor = (name: string) =>
   `https://i.pravatar.cc/200?u=${encodeURIComponent(name)}`;
 
+export { posterFor, backdropFor, avatarFor };
+
 const ROLES = ["Lead", "Supporting", "Antagonist", "Director", "Narrator", "Cameo"];
 
 // Decorate every seed title with poster/backdrop/trailer/cast photos.
