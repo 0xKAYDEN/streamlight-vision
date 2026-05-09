@@ -1,8 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Play, Plus, Star, Share2 } from "lucide-react";
+import { Play, Plus, Star, Share2, Film } from "lucide-react";
+import { useState } from "react";
 import { PosterArt } from "@/components/poster-art";
 import { TitleRow } from "@/components/title-row";
+import { TrailerModal } from "@/components/trailer-modal";
 import { useCatalog, useTitle } from "@/lib/catalog-store";
+import { avatarFor } from "@/lib/catalog";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/titles/$id")({
@@ -14,6 +17,7 @@ function TitlePage() {
   const title = useTitle(id);
   const catalog = useCatalog();
   const { t } = useI18n();
+  const [trailerOpen, setTrailerOpen] = useState(false);
 
   if (!title) {
     return (
@@ -27,8 +31,13 @@ function TitlePage() {
   }
 
   const similar = catalog
-    .filter((t) => t.id !== title.id && t.genres.some((g) => title.genres.includes(g)))
+    .filter((x) => x.id !== title.id && x.genres.some((g) => title.genres.includes(g)))
     .slice(0, 8);
+
+  const profiles: { name: string; role?: string; photo?: string }[] =
+    title.castProfiles && title.castProfiles.length > 0
+      ? title.castProfiles
+      : title.cast.map((name) => ({ name, photo: avatarFor(name) }));
 
   return (
     <div>
@@ -38,51 +47,98 @@ function TitlePage() {
         <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-background/20 to-transparent" />
 
         <div className="relative h-full flex items-end px-4 md:px-8 pb-12">
-          <div className="max-w-3xl">
-            <div className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
-              {title.kind} · {title.year} · {title.runtime}
-            </div>
-            <h1 className="mt-3 text-5xl md:text-7xl font-semibold tracking-tight" style={{ letterSpacing: "-0.03em" }}>
-              {title.title}
-            </h1>
-            <p className="mt-2 text-lg text-muted-foreground italic">{title.tagline}</p>
-
-            <div className="mt-4 flex items-center gap-4 text-sm">
-              <span className="flex items-center gap-1">
-                <Star className="size-3.5 fill-brand text-brand" /> {title.rating.toFixed(1)}
-              </span>
-              <div className="flex flex-wrap gap-2">
-                {title.genres.map((g: string) => (
-                  <span key={g} className="rounded-full glass px-2.5 py-0.5 text-[11px]">
-                    {g}
-                  </span>
-                ))}
+          <div className="flex items-end gap-8 max-w-5xl w-full">
+            {/* Poster card */}
+            <div className="hidden md:block w-[200px] shrink-0 -mb-16">
+              <div className="relative aspect-[2/3] rounded-xl overflow-hidden border border-white/10 shadow-glow">
+                <PosterArt title={title} className="absolute inset-0" />
               </div>
             </div>
+            <div className="max-w-3xl">
+              <div className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
+                {title.kind} · {title.year} · {title.runtime}
+              </div>
+              <h1 className="mt-3 text-5xl md:text-7xl font-semibold tracking-tight" style={{ letterSpacing: "-0.03em" }}>
+                {title.title}
+              </h1>
+              <p className="mt-2 text-lg text-muted-foreground italic">{title.tagline}</p>
 
-            <p className="mt-6 max-w-2xl text-base text-muted-foreground">{title.synopsis}</p>
+              <div className="mt-4 flex items-center gap-4 text-sm">
+                <span className="flex items-center gap-1">
+                  <Star className="size-3.5 fill-brand text-brand" /> {title.rating.toFixed(1)}
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {title.genres.map((g: string) => (
+                    <span key={g} className="rounded-full glass px-2.5 py-0.5 text-[11px]">
+                      {g}
+                    </span>
+                  ))}
+                </div>
+              </div>
 
-            <div className="mt-7 flex items-center gap-3">
-              <Link
-                to="/watch/$id"
-                params={{ id: title.id }}
-                className="inline-flex items-center gap-2 rounded-md bg-gradient-brand px-6 py-3 text-sm font-medium text-white shadow-glow hover:opacity-95 transition"
-              >
-                <Play className="size-4 fill-current" /> {t("title.play")}
-              </Link>
-              <button className="inline-flex items-center gap-2 rounded-md glass px-5 py-3 text-sm hover:bg-white/10 transition">
-                <Plus className="size-4" /> {t("title.myList")}
-              </button>
-              <button className="size-11 grid place-items-center rounded-md glass hover:bg-white/10 transition">
-                <Share2 className="size-4" />
-              </button>
+              <p className="mt-6 max-w-2xl text-base text-muted-foreground">{title.synopsis}</p>
+
+              <div className="mt-7 flex flex-wrap items-center gap-3">
+                <Link
+                  to="/watch/$id"
+                  params={{ id: title.id }}
+                  className="inline-flex items-center gap-2 rounded-md bg-gradient-brand px-6 py-3 text-sm font-medium text-white shadow-glow hover:opacity-95 transition"
+                >
+                  <Play className="size-4 fill-current" /> {t("title.play")}
+                </Link>
+                {title.trailerUrl && (
+                  <button
+                    onClick={() => setTrailerOpen(true)}
+                    className="inline-flex items-center gap-2 rounded-md glass px-5 py-3 text-sm hover:bg-white/10 transition"
+                  >
+                    <Film className="size-4" /> Trailer
+                  </button>
+                )}
+                <button className="inline-flex items-center gap-2 rounded-md glass px-5 py-3 text-sm hover:bg-white/10 transition">
+                  <Plus className="size-4" /> {t("title.myList")}
+                </button>
+                <button className="size-11 grid place-items-center rounded-md glass hover:bg-white/10 transition">
+                  <Share2 className="size-4" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="px-4 md:px-8 grid md:grid-cols-3 gap-8">
-        <div className="md:col-span-2 space-y-6">
+      <section className="px-4 md:px-8 mt-20 grid md:grid-cols-3 gap-8">
+        <div className="md:col-span-2 space-y-10">
+          {profiles.length > 0 && (
+            <div>
+              <h2 className="text-sm uppercase tracking-[0.2em] text-muted-foreground">{t("title.cast")}</h2>
+              <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                {profiles.map((p) => (
+                  <div
+                    key={p.name}
+                    className="group flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3 hover:border-brand/50 hover:bg-white/[0.06] transition"
+                  >
+                    <div className="relative size-12 rounded-full overflow-hidden border border-white/10 shrink-0">
+                      <img
+                        src={p.photo ?? avatarFor(p.name)}
+                        alt={p.name}
+                        loading="lazy"
+                        className="absolute inset-0 w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-sm font-medium truncate">{p.name}</div>
+                      {p.role && (
+                        <div className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground truncate">
+                          {p.role}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div>
             <h2 className="text-sm uppercase tracking-[0.2em] text-muted-foreground">{t("title.servers")}</h2>
             <div className="mt-3 grid sm:grid-cols-2 gap-3">
@@ -124,10 +180,6 @@ function TitlePage() {
         </div>
         <aside className="space-y-4">
           <div>
-            <h3 className="text-sm uppercase tracking-[0.2em] text-muted-foreground">{t("title.cast")}</h3>
-            <div className="mt-2 text-sm">{title.cast.join(", ")}</div>
-          </div>
-          <div>
             <h3 className="text-sm uppercase tracking-[0.2em] text-muted-foreground">{t("title.details")}</h3>
             <dl className="mt-2 text-sm space-y-1">
               <div className="flex justify-between"><dt className="text-muted-foreground">{t("title.year")}</dt><dd>{title.year}</dd></div>
@@ -143,6 +195,10 @@ function TitlePage() {
         <div className="mt-14">
           <TitleRow heading={t("title.similar")} titles={similar} />
         </div>
+      )}
+
+      {trailerOpen && title.trailerUrl && (
+        <TrailerModal url={title.trailerUrl} onClose={() => setTrailerOpen(false)} />
       )}
     </div>
   );

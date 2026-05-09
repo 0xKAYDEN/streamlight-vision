@@ -184,6 +184,15 @@ function AdminTitleEditor() {
           <Field label="Hue 2 (200–320)">
             <TextInput type="number" value={String(draft.hue2)} onChange={(v) => set("hue2", Number(v) || 240)} />
           </Field>
+          <Field label="Poster image URL">
+            <TextInput value={draft.posterUrl ?? ""} onChange={(v) => set("posterUrl", v)} placeholder="https://…/poster.jpg" />
+          </Field>
+          <Field label="Backdrop image URL">
+            <TextInput value={draft.backdropUrl ?? ""} onChange={(v) => set("backdropUrl", v)} placeholder="https://…/backdrop.jpg" />
+          </Field>
+          <Field label="Trailer URL (YouTube or .mp4)" full>
+            <TextInput value={draft.trailerUrl ?? ""} onChange={(v) => set("trailerUrl", v)} placeholder="https://www.youtube.com/watch?v=…" />
+          </Field>
           <Field label="Synopsis" full>
             <textarea
               value={draft.synopsis}
@@ -197,6 +206,68 @@ function AdminTitleEditor() {
             <Toggle label="Featured" value={!!draft.featured} onChange={(v) => set("featured", v)} />
             <Toggle label="Trending" value={!!draft.trending} onChange={(v) => set("trending", v)} />
           </div>
+        </div>
+      </Section>
+
+      <Section
+        title="Cast profiles"
+        action={
+          <button
+            onClick={() =>
+              set("castProfiles", [
+                ...(draft.castProfiles ?? []),
+                { name: "", role: "", photo: "" },
+              ])
+            }
+            className="inline-flex items-center gap-1.5 rounded-md glass px-2.5 py-1.5 text-xs hover:bg-white/10 transition"
+          >
+            <Plus className="size-3.5" /> Add member
+          </button>
+        }
+      >
+        <div className="space-y-2">
+          {(draft.castProfiles ?? []).map((c, i) => (
+            <div key={i} className="grid grid-cols-12 gap-2 items-center rounded-lg border border-white/10 bg-white/[0.03] p-3">
+              <div className="col-span-1 flex justify-center">
+                <div className="size-9 rounded-full overflow-hidden border border-white/10 bg-white/5">
+                  {c.photo && (
+                    <img src={c.photo} alt={c.name} className="w-full h-full object-cover" />
+                  )}
+                </div>
+              </div>
+              <div className="col-span-3">
+                <TextInput
+                  value={c.name}
+                  onChange={(v) => set("castProfiles", updateArrPure(draft.castProfiles ?? [], i, { ...c, name: v }))}
+                  placeholder="Name"
+                />
+              </div>
+              <div className="col-span-2">
+                <TextInput
+                  value={c.role ?? ""}
+                  onChange={(v) => set("castProfiles", updateArrPure(draft.castProfiles ?? [], i, { ...c, role: v }))}
+                  placeholder="Role"
+                />
+              </div>
+              <div className="col-span-5">
+                <TextInput
+                  value={c.photo ?? ""}
+                  onChange={(v) => set("castProfiles", updateArrPure(draft.castProfiles ?? [], i, { ...c, photo: v }))}
+                  placeholder="Photo URL (https://…)"
+                />
+              </div>
+              <div className="col-span-1 flex justify-end">
+                <IconBtn onClick={() => set("castProfiles", (draft.castProfiles ?? []).filter((_, j) => j !== i))}>
+                  <Trash2 className="size-3.5" />
+                </IconBtn>
+              </div>
+            </div>
+          ))}
+          {(draft.castProfiles?.length ?? 0) === 0 && (
+            <div className="text-xs text-muted-foreground p-3">
+              No profiles yet. The "Cast" comma list above will still render with auto-avatars.
+            </div>
+          )}
         </div>
       </Section>
 
