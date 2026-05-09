@@ -22,6 +22,12 @@ export type Episode = {
   subtitles?: Subtitle[];
 };
 
+export type CastMember = {
+  name: string;
+  role?: string;
+  photo?: string;
+};
+
 export type Title = {
   id: string;
   title: string;
@@ -33,9 +39,13 @@ export type Title = {
   tagline: string;
   synopsis: string;
   cast: string[];
-  // Visual identity (gradient based, no external images required)
+  castProfiles?: CastMember[];
+  // Visual identity (gradient based fallback, no external images required)
   hue: number; // 200-320
   hue2: number;
+  posterUrl?: string;
+  backdropUrl?: string;
+  trailerUrl?: string; // YouTube watch/embed URL or video file
   trending?: boolean;
   featured?: boolean;
   servers: StreamServer[];
