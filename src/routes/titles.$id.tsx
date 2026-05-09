@@ -34,7 +34,7 @@ function TitlePage() {
     .filter((x) => x.id !== title.id && x.genres.some((g) => title.genres.includes(g)))
     .slice(0, 8);
 
-  const profiles =
+  const profiles: { name: string; role?: string; photo?: string }[] =
     title.castProfiles && title.castProfiles.length > 0
       ? title.castProfiles
       : title.cast.map((name) => ({ name, photo: avatarFor(name) }));
